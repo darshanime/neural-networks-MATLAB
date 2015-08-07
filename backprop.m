@@ -1,69 +1,44 @@
-function [nabla_b, nabla_w] = backprop(x,y)
-
-
+function [nabla_b, nabla_w] = backprop(input_x,input_y)
 %        Return a tuple ``(nabla_b, nabla_w)`` representing the
 %        gradient for the cost function C_x.  ``nabla_b`` and
 %        ``nabla_w`` are layer-by-layer lists of numpy arrays, similar
 %        to ``self.biases`` and ``self.weights``.
-
-        global num_layers = numel(sizes);
-        global psizes = sizes;
+        global psizes;
+        global num_layers = numel(psizes);
         global y;
         global biases;
         global weights;
         y=psizes(2:end);
-        
-        for i =1:numel(y)
-          nabla_b(i).b=zeros(i+1,1);
+        numel_y = numel(y);
+   
+        for i =1:numel_y
+          a=y(i);
+          nabla_b(i).b=zeros(a,1);
+          nabla_w(i).w = zeros(psizes(i+1), psizes(i));
         endfor 
+
+% Feedforward
+        activation = input_x;
+        activations(1).activ = [input_x];
+       
+        for i =1:numel_y
+            z = weights(i).weight*activation + biases(i).bias;
+            zs(i).zs= z;
+            activation = sigmoid(z);
+            activations(i+1).activ = activation;
+        endfor
+
+%Backward pass
+        delta = cost_derivative(activations(numel_y+1).activ, input_y).*sigmoid_prime(zs(numel_y).zs);
+        nabla_b(numel_y).b = delta;
+        nabla_w(numel_y).w = delta.*activations(numel_y).activ';
         
-        for i=1:numel(psizes)        
-          namba_w(i).w = randn(i+1, i)
-        endfor
-
-        activation = x
-        activations = [x]
-        zs = []
-
-        for i =1:numel(y)
-            z = weights(i).weight*a + biases(i).bias;
-            zs.append(z)
-            activation = sigmoid(z)
-            activations.append(activation)
-        endfor
-
-
-
-
-nabla_b = [np.zeros(b.shape) for b in self.biases]
-        nabla_w = [np.zeros(w.shape) for w in self.weights]
-        # feedforward
-        activation = x
-        activations = [x] # list to store all the activations, layer by layer
-        zs = [] # list to store all the z vectors, layer by layer
-        for b, w in zip(self.biases, self.weights):
-            z = np.dot(w, activation)+b
-            zs.append(z)
-            activation = sigmoid_vec(z)
-            activations.append(activation)
-        # backward pass
-        delta = self.cost_derivative(activations[-1], y) * \
-            sigmoid_prime_vec(zs[-1])
-        nabla_b[-1] = delta
-        nabla_w[-1] = np.dot(delta, activations[-2].transpose())
-        # Note that the variable l in the loop below is used a little
-        # differently to the notation in Chapter 2 of the book.  Here,
-        # l = 1 means the last layer of neurons, l = 2 is the
-        # second-last layer, and so on.  It's a renumbering of the
-        # scheme in the book, used here to take advantage of the fact
-        # that Python can use negative indices in lists.
-        for l in xrange(2, self.num_layers):
-            z = zs[-l]
-            spv = sigmoid_prime_vec(z)
-            delta = np.dot(self.weights[-l+1].transpose(), delta) * spv
-            nabla_b[-l] = delta
-            nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
-        return (nabla_b, nabla_w)
- 
-
+        for l =1:numel_y-1
+            z = zs(numel_y-l).zs;
+            spv = sigmoid_prime(z);
+            delta_new = (transpose(weights(numel_y-l+1).weight)*delta).*spv;
+            delta=delta_new;
+            nabla_b(numel_y-l).b = delta;
+            nabla_w(numel_y-l).w = delta.*transpose(activations(numel_y-l).activ);
+        endfor        
 end

@@ -1,4 +1,4 @@
-function [num_layers, sizes, y, biases, weights ] = init(sizes)
+function [num_layers, psizes, y, biases, weights ] = init(sizes)
 
 %        The list ``sizes`` contains the number of neurons in the
 %        respective layers of the network.  For example, if the list
@@ -19,13 +19,10 @@ function [num_layers, sizes, y, biases, weights ] = init(sizes)
         
         
         for i =1:numel(y)
-          biases(i).bias=randn(i+1,1);
+          a=y(i);
+          biases(i).bias=randn(a,1);
+          weights(i).weight = randn(psizes(i+1), psizes(i));
         endfor 
-
-        for i=1:numel(psizes)        
-          weights(i).weight = randn(i+1, i)
-        endfor
- 
-
+    
 end
 

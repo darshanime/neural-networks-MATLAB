@@ -1,20 +1,28 @@
-function a = SGD(training_data, epoch, mini_batch_size, eta, test_data=None)
-        if (test_data!=None): 
-        global n_test = len(test_data)
-        endif
+function [] = SGD(training_data,test_data, epochs, eta_SGD)
+%        Train the neural network using full-batch stochastic
+%        gradient descent.  The ``training_data`` is a struct of arrays
+%        ``(x, y)`` representing the training inputs and the desired
+%        outputs. If ``test_data`` is provided then the
+%        network will be evaluated against the test data after each
+%        epoch, and partial progress printed out.  This is useful for
+%       tracking progress, but slows things down substantially."""
+
+        disp("After each iteration, results will be shown.")     
+                 
+        global n_test_data = numel(test_data);
+        global num_layers = numel(sizes);
+        global psizes = sizes;
+        y=psizes(2:end);
+        global biases;
+        global weights;
+        global eta;
         
-        global n = len(training_data)
+    for j =1:epochs                
+        update_mini_batch(training_data, eta_SGD);        
+     
         
-        for num in 1 : epochs:
-            random.shuffle(training_data)
-            for x in 1: len(mini_batch_size:
-            mini_batches = [
-                training_data[x:x+mini_batch_size]
-                
-            for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta)
-            if test_data:
-                print "Epoch {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), n_test)
-            else:
-                print "Epoch {0} complete".format(j)
+            [n_test_score] = evaluate(test_data);        
+            fprintf('Epoch %d : %d out of %d \n', j, n_test_score, n_test_data)   
+    endfor
+
+end
