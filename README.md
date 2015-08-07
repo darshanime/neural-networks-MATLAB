@@ -1,7 +1,8 @@
 # neural-networks-MATLAB
 Implementation of Artificial neural networks in MATLAB.
 
-Usage demonstration :
+_______
+**Usage demonstration** :
 
 Defination of the network :
 ` >>> [num_layers, psizes, y, biases, weights ] = init([7,5,1]) `
